@@ -1,21 +1,21 @@
-use crate::{database::DatabaseGuard, ConduitResult, Ruma};
-use hmac::{Hmac, Mac, NewMac};
+use hmac::{Hmac, Mac};
+#[cfg(feature = "conduit_bin")]
+use rocket::get;
 use ruma::api::client::r0::voip::get_turn_server_info;
 use ruma::SecondsSinceUnixEpoch;
 use sha1::Sha1;
 use std::time::{Duration, SystemTime};
 
-type HmacSha1 = Hmac<Sha1>;
+use crate::{ConduitResult, database::DatabaseGuard, Ruma};
 
-#[cfg(feature = "conduit_bin")]
-use rocket::get;
+type HmacSha1 = Hmac<Sha1>;
 
 /// # `GET /_matrix/client/r0/voip/turnServer`
 ///
 /// TODO: Returns information about the recommended turn server.
 #[cfg_attr(
-    feature = "conduit_bin",
-    get("/_matrix/client/r0/voip/turnServer", data = "<body>")
+feature = "conduit_bin",
+get("/_matrix/client/r0/voip/turnServer", data = "<body>")
 )]
 #[tracing::instrument(skip(body, db))]
 pub async fn turn_server_route(
